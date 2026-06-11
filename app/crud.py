@@ -29,3 +29,17 @@ def create_short_url(db: Session, url_data: schemas.URLCreate):
     db.refresh(db_url)
 
     return db_url
+
+def update_short_url(db: Session, short_code: str, url_data: schemas.URLUpdate):
+    db_url = get_url_by_short_code(db, short_code)
+
+    if db_url is None:
+        return None
+    
+    db_url.original_url = str(url_data.original_url)
+
+    # Mutated records are marked as 'dirty' and resultant .commit() performs an UPDATE, not an INSERT
+    db.commit()
+    db.refresh(db_url)
+
+    return db_url
