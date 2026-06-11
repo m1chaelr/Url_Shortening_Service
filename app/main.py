@@ -1,5 +1,13 @@
 from fastapi import FastAPI
-app = FastAPI()
+from app.database import create_db_tables
+from contextlib import asynccontextmanager
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    create_db_tables()
+    yield
+
+app = FastAPI(lifespan=lifespan)
 
 # Root response
 @app.get("/")
