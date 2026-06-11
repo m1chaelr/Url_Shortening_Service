@@ -1,1 +1,0 @@
-print("[Python] URL Shortening Service")
