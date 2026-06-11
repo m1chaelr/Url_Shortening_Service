@@ -49,4 +49,12 @@ def update_short_url(url_data: schemas.URLUpdate, short_code: str, db: Session =
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Short URL not found")
     
     return db_url
+
+# Delete shortened url
+@app.delete("/shorten/{short_code}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_short_url(short_code: str, db: Session = Depends(get_db)):
     
+    if not crud.delete_short_url(db, short_code):
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Short URL not found")
+    
+    return

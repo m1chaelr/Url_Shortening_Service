@@ -43,3 +43,14 @@ def update_short_url(db: Session, short_code: str, url_data: schemas.URLUpdate):
     db.refresh(db_url)
 
     return db_url
+
+def delete_short_url(db: Session, short_code: str):
+    db_url = get_url_by_short_code(db, short_code)
+
+    if db_url is None:
+        return False
+    
+    db.delete(db_url)
+    db.commit()
+    
+    return True
