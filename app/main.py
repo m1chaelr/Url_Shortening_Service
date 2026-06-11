@@ -30,6 +30,16 @@ def health_check():
 def create_short_url(url_data: schemas.URLCreate, db: Session = Depends(get_db)):
     return crud.create_short_url(db, url_data)
 
+# Read-only stats for a shortened URL
+@app.get("/shorten/{short_code}/stats", response_model=schemas.URLStats)
+def get_short_url_stats(short_code: str, db: Session = Depends(get_db)):
+    db_url = crud.get_url_by_short_code(db, short_code)
+
+    if db_url is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Short URL not found")
+    
+    return db_url
+
 # Read original url for short_code
 @app.get("/shorten/{short_code}", response_model=schemas.URLResponse)
 def get_short_url(short_code: str, db: Session = Depends(get_db)):
@@ -58,3 +68,6 @@ def delete_short_url(short_code: str, db: Session = Depends(get_db)):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Short URL not found")
     
     return
+
+
+                        
