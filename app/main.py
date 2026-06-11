@@ -1,4 +1,5 @@
 from fastapi import FastAPI, Depends, status, HTTPException
+from fastapi.responses import RedirectResponse
 from app.database import create_db_tables, get_db
 from app import crud, schemas
 from sqlalchemy.orm import Session
@@ -48,7 +49,7 @@ def get_short_url(short_code: str, db: Session = Depends(get_db)):
     if db_url is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Short URL not found")
     
-    return crud.increment_short_code_access_count(db, db_url)
+    return crud.increment_access_count(db, db_url)
 
 # Update the original url
 @app.put("/shorten/{short_code}", response_model=schemas.URLResponse)
@@ -68,6 +69,18 @@ def delete_short_url(short_code: str, db: Session = Depends(get_db)):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Short URL not found")
     
     return
+
+# Redirect to Original url
+@app.get("/{short_code}") # Could also use 307 (temporary) or 301 (permanent)
+def redirect_short_url(short_code: str, db: Session = Depends(get_db)):
+    db_url = crud.get_url_by_short_code(db, short_code)
+
+    if db_url is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Short URL not found")
+    
+    db_url = crud.increment_access_count(db, db_url)
+
+    return RedirectResponse(db_url.original_url, status_code=status.HTTP_302_FOUND)
 
 
                         

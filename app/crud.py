@@ -55,7 +55,7 @@ def delete_short_url(db: Session, short_code: str):
     
     return True
 
-def increment_short_code_access_count(db: Session, db_url: models.ShortenedURL):
+def increment_access_count(db: Session, db_url: models.ShortenedURL):
 
     if db_url is None:
         return None
