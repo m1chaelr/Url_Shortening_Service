@@ -46,9 +46,9 @@ def get_short_url(short_code: str, db: Session = Depends(get_db)):
     db_url = crud.get_url_by_short_code(db, short_code)
 
     if db_url is None:
-        raise HTTPException(status_code=404, detail="Short URL not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Short URL not found")
     
-    return db_url
+    return crud.increment_short_code_access_count(db, db_url)
 
 # Update the original url
 @app.put("/shorten/{short_code}", response_model=schemas.URLResponse)

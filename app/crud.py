@@ -54,3 +54,17 @@ def delete_short_url(db: Session, short_code: str):
     db.commit()
     
     return True
+
+def increment_short_code_access_count(db: Session, db_url: models.ShortenedURL):
+
+    if db_url is None:
+        return None
+    
+    db_url.access_count += 1
+    # TODO: access-count increments are note concurrency-hardened, if 2 users GET a url at the same time, we may only increment by 1, not 2.
+    # in future development, use atomic database update
+
+    db.commit()
+    db.refresh(db_url)
+
+    return db_url
