@@ -1,1 +1,31 @@
-# CRUD operations
+import secrets
+import string
+from sqlalchemy.orm import Session
+from app import models, schemas
+CHARACTERS = string.ascii_letters + string.digits
+
+def generate_short_code(length: int = 6) -> str:
+    return "".join(secrets.choice(CHARACTERS) for _ in range(length))
+
+def get_url_by_short_code(db: Session, short_code: str):
+    return db.query(models.ShortenedURL).filter(models.ShortenedURL.short_code == short_code).first()
+
+def create_short_url(db: Session, url_data: schemas.URLCreate):
+    short_code = generate_short_code()
+
+    # Collision handling
+    while get_url_by_short_code(db, short_code) is not None:
+        short_code = generate_short_code()
+    
+    # Create a row within the ShortenedUrl table
+    db_url = models.ShortenedURL(
+        original_url=str(url_data.original_url),
+        short_code=short_code
+    )
+
+    # Save the row
+    db.add(db_url)
+    db.commit()
+    db.refresh(db_url)
+
+    return db_url

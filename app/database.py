@@ -3,7 +3,6 @@ from sqlalchemy.orm import sessionmaker
 from app.models import Base
 
 DATABASE_URL = "sqlite:///./url_shortener.db"
-logger = logging.getLogger(__name__)
 
 engine = create_engine(DATABASE_URL, connect_args={"check_same_thread":False})
 SessionLocal = sessionmaker(

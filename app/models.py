@@ -4,7 +4,6 @@ from datetime import datetime, timezone
 
 Base = declarative_base()
 
-
 class ShortenedURL(Base):
     '''Add a ShortenedURL table model. Extending the declarative_base adds this model to the metadata registry.'''
     __tablename__ = "shortened_urls"

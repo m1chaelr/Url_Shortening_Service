@@ -15,3 +15,16 @@ class URLResponse(BaseModel):
     access_count: int
 
     model_config = {"from_attributes": True}
+    # adding this allows for referencing variables as attributes, e.g., url.short_code, instead of dict - url["short_code"]
+
+class URLUpdate(BaseModel):
+    original_url: HttpUrl
+
+class URLStats(BaseModel):
+    short_code: str
+    original_url: HttpUrl
+    created_at: datetime
+    updated_at: datetime
+    access_count: int
+
+    model_config = {"from_attributes": True}
