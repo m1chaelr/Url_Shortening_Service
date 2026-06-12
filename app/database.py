@@ -2,8 +2,9 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from app.models import Base
 import logging
+import os
 
-DATABASE_URL = "sqlite:///./url_shortener.db"
+DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./url_shortener.db")
 logger = logging.getLogger(__name__)
 
 engine = create_engine(DATABASE_URL, connect_args={"check_same_thread":False})
