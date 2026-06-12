@@ -173,10 +173,30 @@ pytest -q
 
 The tests use a dedicated SQLite database and FastAPI dependency overrides, so they do not depend on the local development database.
 
+## Continuous Integration
+
+This project includes a GitHub Actions workflow at `.github/workflows/tests.yml`.
+
+The workflow runs on `push` and `pull_request`, installs dependencies with Python 3.12, and runs:
+
+```bash
+pytest -q
+```
+
+This gives the project a basic CI safety check so test failures are visible before changes are merged or shared.
+
+## Logging
+
+Application logging is configured centrally in `app/logging_config.py` and initialized during FastAPI startup.
+
+Current logging is intentionally minimal. The app logs database table creation on startup. A production version would usually add structured request/action logs and configure log levels through environment variables.
+
 ## Notes
 
 - Local development data is stored in `url_shortener.db`, which is ignored by Git.
 - Tests use `test_url_shortener.db`, which is also ignored by Git.
 - Creating the same original URL multiple times currently creates multiple short codes. This is intentional for now.
-- Access-count increments are implemented with the ORM object lifecycle for clarity. A production version should consider atomic database updates for high-concurrency traffic.
+- Access-count increments use an atomic SQL update (`access_count = access_count + 1`) to avoid lost updates under concurrent requests.
 - The project currently uses SQLite for local development. A production deployment would likely use a database such as PostgreSQL.
+- Runtime configuration is currently simple and local-first. A production version should read settings such as database URL, log level, and environment name from environment variables.
+- Deployment/CD is not implemented yet. A realistic next step would be deploying to a platform such as Render, Fly.io, or Railway with managed secrets and a production database.
