@@ -1,5 +1,7 @@
 import secrets
 import string
+from datetime import datetime, timezone
+from sqlalchemy import update
 from sqlalchemy.orm import Session
 from app import models, schemas
 import logging
@@ -66,10 +68,15 @@ def increment_access_count(db: Session, db_url: models.ShortenedURL):
 
     if db_url is None:
         return None
-    
-    db_url.access_count += 1
-    # TODO: access-count increments are note concurrency-hardened, if 2 users GET a url at the same time, we may only increment by 1, not 2.
-    # in future development, use atomic database update
+
+    db.execute(
+        update(models.ShortenedURL)
+        .where(models.ShortenedURL.id == db_url.id)
+        .values(
+            access_count=models.ShortenedURL.access_count + 1,
+            updated_at=datetime.now(timezone.utc),
+        )
+    )
 
     db.commit()
     db.refresh(db_url)
