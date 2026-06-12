@@ -1,12 +1,15 @@
 from fastapi import FastAPI, Depends, status, HTTPException
 from fastapi.responses import RedirectResponse
-from app.database import create_db_tables, get_db
-from app import crud, schemas
 from sqlalchemy.orm import Session
 from contextlib import asynccontextmanager
 
+from app.database import create_db_tables, get_db
+from app.logging_config import setup_logging
+from app import crud, schemas
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    setup_logging()
     create_db_tables()
     yield
 
@@ -81,6 +84,3 @@ def redirect_short_url(short_code: str, db: Session = Depends(get_db)):
     db_url = crud.increment_access_count(db, db_url)
 
     return RedirectResponse(db_url.original_url, status_code=status.HTTP_302_FOUND)
-
-
-                        

@@ -2,6 +2,9 @@ import secrets
 import string
 from sqlalchemy.orm import Session
 from app import models, schemas
+import logging
+
+logger = logging.getLogger(__name__)
 CHARACTERS = string.ascii_letters + string.digits
 
 def generate_short_code(length: int = 6) -> str:
@@ -15,6 +18,7 @@ def create_short_url(db: Session, url_data: schemas.URLCreate):
 
     # Collision handling
     while get_url_by_short_code(db, short_code) is not None:
+        logger.warning(f"Collision for short_code = {short_code}, generating new short_code.")
         short_code = generate_short_code()
     
     # Create a row within the ShortenedUrl table
@@ -23,6 +27,7 @@ def create_short_url(db: Session, url_data: schemas.URLCreate):
         short_code=short_code
     )
 
+    logger.info(f"Creating new record for short_code = {short_code}")
     # Save the row
     db.add(db_url)
     db.commit()
@@ -38,6 +43,7 @@ def update_short_url(db: Session, short_code: str, url_data: schemas.URLUpdate):
     
     db_url.original_url = str(url_data.original_url)
 
+    logger.info(f"Updating record for short_code = {short_code}:")
     # Mutated records are marked as 'dirty' and resultant .commit() performs an UPDATE, not an INSERT
     db.commit()
     db.refresh(db_url)
@@ -50,6 +56,7 @@ def delete_short_url(db: Session, short_code: str):
     if db_url is None:
         return False
     
+    logger.info(f"Deleting record for short_code = {short_code}.")
     db.delete(db_url)
     db.commit()
     

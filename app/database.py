@@ -1,8 +1,10 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from app.models import Base
+import logging
 
 DATABASE_URL = "sqlite:///./url_shortener.db"
+logger = logging.getLogger(__name__)
 
 engine = create_engine(DATABASE_URL, connect_args={"check_same_thread":False})
 SessionLocal = sessionmaker(
@@ -20,4 +22,5 @@ def get_db():
 
 def create_db_tables():
     '''Create all the table models within the declarative_base metadata registry.'''
+    logger.info("Creating database tables")
     Base.metadata.create_all(bind=engine)
