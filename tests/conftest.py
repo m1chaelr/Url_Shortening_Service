@@ -7,7 +7,6 @@ from app.database import get_db
 from app.main import app
 from app.models import Base
 
-
 SQLALCHEMY_DATABASE_URL = "sqlite:///./test_url_shortener.db"
 
 engine = create_engine(
@@ -20,7 +19,6 @@ TestingSessionLocal = sessionmaker(
     bind=engine,
 )
 
-
 def override_get_db():
     db = TestingSessionLocal()
     try:
@@ -28,9 +26,7 @@ def override_get_db():
     finally:
         db.close()
 
-
 app.dependency_overrides[get_db] = override_get_db
-
 
 @pytest.fixture(autouse=True)
 def reset_test_database():
@@ -38,11 +34,9 @@ def reset_test_database():
     Base.metadata.create_all(bind=engine)
     yield
 
-
 @pytest.fixture
 def client():
     return TestClient(app)
-
 
 @pytest.fixture
 def db_session():
