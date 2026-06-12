@@ -229,7 +229,7 @@ This gives the project a basic CI safety check so test failures are visible befo
 
 Application logging is configured centrally in `app/logging_config.py` and initialized during FastAPI startup.
 
-Current logging is intentionally minimal. The app logs database table creation on startup. A production version would usually add structured request/action logs and configure log levels through environment variables.
+Current logging is intentionally minimal. The app logs selected create, update, delete, and short-code collision events. A production version would usually add structured request/action logs and correlation/request IDs.
 
 ## Notes
 
