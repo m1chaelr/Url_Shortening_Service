@@ -13,6 +13,7 @@ The service can create short codes for long URLs, retrieve and update stored URL
 - Uvicorn
 - SQLite
 - SQLAlchemy
+- Alembic
 - Pydantic
 - pytest
 
@@ -41,6 +42,12 @@ Install dependencies:
 
 ```bash
 pip install -r requirements.txt
+```
+
+Apply database migrations:
+
+```bash
+alembic upgrade head
 ```
 
 ## Running the App
@@ -83,6 +90,24 @@ Example:
 ```bash
 DATABASE_URL="sqlite:///./url_shortener.db" LOG_LEVEL=DEBUG uvicorn app.main:app --reload
 ```
+
+## Database Migrations
+
+Database schema changes are managed with Alembic.
+
+Apply all migrations:
+
+```bash
+alembic upgrade head
+```
+
+Create a new migration after changing SQLAlchemy models:
+
+```bash
+alembic revision --autogenerate -m "describe schema change"
+```
+
+Review generated migrations before applying them. Alembic reads `DATABASE_URL`, so the same migration workflow can target local development or another configured database.
 
 ## API Endpoints
 
@@ -192,7 +217,7 @@ The tests use a dedicated SQLite database and FastAPI dependency overrides, so t
 
 This project includes a GitHub Actions workflow at `.github/workflows/tests.yml`.
 
-The workflow runs on `push` and `pull_request`, installs dependencies with Python 3.12, and runs:
+The workflow runs on `push` and `pull_request`, installs dependencies with Python 3.12, applies migrations against a temporary SQLite database, and runs:
 
 ```bash
 pytest -q
@@ -208,7 +233,7 @@ Current logging is intentionally minimal. The app logs database table creation o
 
 ## Notes
 
-- Local development data is stored in `url_shortener.db`, which is ignored by Git.
+- Local development data is stored in `url_shortener.db`, which is ignored by Git. Run `alembic upgrade head` to create or update local tables.
 - Tests use `test_url_shortener.db`, which is also ignored by Git.
 - Creating the same original URL multiple times currently creates multiple short codes. This is intentional for now.
 - Access-count increments use an atomic SQL update (`access_count = access_count + 1`) to avoid lost updates under concurrent requests.

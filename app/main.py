@@ -3,14 +3,13 @@ from fastapi.responses import RedirectResponse
 from sqlalchemy.orm import Session
 from contextlib import asynccontextmanager
 
-from app.database import create_db_tables, get_db
+from app.database import get_db
 from app.logging_config import setup_logging
 from app import crud, schemas
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     setup_logging()
-    create_db_tables()
     yield
 
 app = FastAPI(lifespan=lifespan)

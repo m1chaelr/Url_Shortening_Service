@@ -22,5 +22,8 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
+      - name: Run database migrations
+        run: DATABASE_URL="sqlite:///./ci_migration_check.db" alembic upgrade head
+
       - name: Run tests
         run: pytest -q
