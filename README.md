@@ -2,7 +2,7 @@
 
 ## Overview
 
-This is a Python REST API for shortening URLs, based on the roadmap.sh Backend Roadmap URL Shortening Service project.
+This is a Python REST API for shortening URLs, based on the roadmap.sh Backend Roadmap [URL Shortening Service project](https://roadmap.sh/projects/url-shortening-service).
 
 The service can create short codes for long URLs, retrieve and update stored URLs, delete short URLs, return usage statistics, and redirect browser requests from a short code to the original URL.
 
